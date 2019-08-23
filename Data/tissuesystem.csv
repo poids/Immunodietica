@@ -1,0 +1,59 @@
+﻿Tissue,Organ,System
+adrenal gland,Adrenal gland,Endocrine
+appendix,Appendix,Digestive
+bone marrow,Bone marrow,Lymphatic
+breast,Breast ,Reproductive
+bronchus,Lung,Respiratory
+caudate,Brain,Nervous
+cerebellum,Brain,Nervous
+cerebral cortex,Brain,Nervous
+"cervix, uterine",Uterus,Reproductive
+colon,Intestine,Digestive
+duodenum,Intestine,Digestive
+endometrium 1,Uterus,Reproductive
+endometrium 2,Uterus,Reproductive
+epididymis,Testis,Reproductive
+esophagus,Esophagus,Digestive
+fallopian tube,Ovary,Reproductive
+gallbladder,Gallbladder,DIgestive
+heart muscle,Heart,Circulatory
+hippocampus,Brain,Nervous
+kidney,Kidney,Excretory 
+liver,Liver,Digestive
+lung,Lung,Respiratory
+lymph node,Lymph node,Lymphatic
+nasopharynx,Pharynx,Digestive
+oral mucosa,Soft tissue,Ubiquitous
+ovary,Ovary,Reproductive
+pancreas,Pancreas,Endocrine
+parathyroid gland,Parathyroid,Endocrine
+placenta,Placenta,Reproductive
+prostate,Prostate,Reproductive
+rectum,Rectum,Excretory 
+salivary gland,Salivary gland,Integumentary
+seminal vesicle,Testis,Reproductive
+skeletal muscle,Muscle,Muscular
+skin 1,Skin,Integumentary
+skin 2,Skin,Integumentary
+small intestine,Intestine,Digestive
+smooth muscle,Smooth muscle,Muscular
+soft tissue 1,Soft tissue,Ubiquitous
+soft tissue 2,Soft tissue,Ubiquitous
+spleen,Spleen,Lymphatic
+stomach 1,Stomach,Digestive
+stomach 2,Stomach,Digestive
+testis,Testis,Reproductive
+thyroid gland,Thyroid,Endocrine
+tonsil,Tonsil,Lymphatic
+urinary bladder,Bladder,Excretory 
+vagina,Vagina,Reproductive
+hypothalamus,Brain,Nervous
+hair,Skin,Integumentary
+lactating breast,Breast ,Reproductive
+skin,Skin,Integumentary
+retina,Eye,Visual
+eye,Eye,Visual
+thymus,Thymus,Lymphatic
+pituitary gland,Pituitary,Endocrine
+choroid plexus,Brain,Nervous
+sole of foot,Foot,Integumentary
