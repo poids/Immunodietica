@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#Builds directory format and downloads/installed required files
+#Requires latest ncbi-blast+ package to run: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+
+INSTALL_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+
+mkdir ${INSTALL_PATH}/data
+mkdir ${INSTALL_PATH}/results
+
+echo 'Downloading/Installing Swissprot Database'
+wget 'ftp://ftp.ncbi.nih.gov/blast/db/FASTA/swissprot.gz'
+mv swissprot.gz ${INSTALL_PATH}/data/
+gunzip ${INSTALL_PATH}/data/swissprot.gz
+
+#The following commands require ncbi-blast+ to run:
+makeblastdb -in ${INSTALL_PATH}/data/swissprot -dbtype 'prot' -out ${INSTALL_PATH}/data/swissprot
+
+echo '------'
+
+echo 'Downloading Normal-Tissue Data from Human Protein Atlas'
+wget 'https://www.proteinatlas.org/download/normal_tissue.tsv.zip'
+mv normal_tissue.tsv.zip ${INSTALL_PATH}/data/
+unzip ${INSTALL_PATH}/data/normal_tissue.tsv.zip -d ${INSTALL_PATH}/data
+
+echo 'FINISHED!!!'
