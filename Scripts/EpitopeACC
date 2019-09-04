@@ -11,7 +11,7 @@ do
         PROTEIN=`grep -m1 -B3 ${epitope} swissprot | grep '>' | cut -d '>' -f 2 | cut -d '.' -f 1 | head -1`
 
         #Creates temporary fasta file for missing epitope
-        echo ">"${epitope} > temp_fasta.fa
+        echo ">SEQUENCE" > temp_fasta.fa
         echo ${epitope} >> temp_fasta.fa
 
 

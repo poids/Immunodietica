@@ -25,6 +25,30 @@ ubiquitous = function(epitope_df, org_no) {
   return(epitope_df)
 }
 
+#FUNCTION: Saves plot as PNG and adjusts plot width based on number of columns
+save_plot=function(p, plot_type){
+  no_col=nrow(p$data)#Number of columns in graph
+  p_height=500 #height of plot
+  min_p_width=450 #min width of plot
+  max_p_width=800 #max width of plot
+  aspect_ratio=(max_p_width-min_p_width)/34 #Aspect Ratio
+  if (no_col<=12) {
+    p_width=min_p_width #assign plot width to minimum value
+  } else {
+    p_width=450+round(no_col*aspect_ratio) #Adujusts width of plot based on number of columns
+  }
+  
+  #Converts plot width-height to inches by pixel/inch ratio (320="retina")
+  ppi=100
+  p_height=p_height/ppi
+  p_width=p_width/ppi
+  
+  #Saves plot
+  ggsave(paste0(plot_type, ".png"), plot = p, path = NULL,
+         scale = 1, width = p_width, height = p_height, units = "in",
+         dpi = "retina", limitsize = TRUE)
+}
+
 #Add Tissue/Organ System row to tissue dataframe
 tis_expr <- merge(tissue, system, by='Tissue') %>%
   select(Gene, Gene.name, Organ, System, Tissue, Cell.type, Level, Reliability)
@@ -32,19 +56,8 @@ tis_expr <- merge(tissue, system, by='Tissue') %>%
 #Remove entries for pituitary gland and eye (Not enough data form Human Protein Atlas to be accurate)
 tis_expr=tis_expr[!(tis_expr$Organ=='Pituitary' | tis_expr$Organ=='Eye' | tis_expr$Organ=='Foot' | tis_expr$Organ=='Thymus'),]
 
-#Count expression level
-tissue %>%
-  filter(Gene.name=='SOX4') %>%
-  filter(Level!='Not detected') %>%
-  filter(Reliability!='Uncertain') %>%
-  group_by(Level) %>%
-  count(Tissue)
 
-#NOTES:
-#Tried to threshold expression-level with only 'high' level matches, but many genes did not show up
-
-
-#FOR TESTING
+#Import dataframe contianing results of epitope-uniprot query
 uniprot=read.csv('Data/protname_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
 
 #PIG_TEST
@@ -122,25 +135,34 @@ test_organ<-tis_expr %>%
 mycol <- c("navy", "blue", "cyan", "lightcyan", "yellow", "red", "red4")
 
 #System
-ggplot(data=test_system, aes(x=System, y=n)) +
-  geom_col(colour="black", aes(fill=n)) +
+p<-ggplot(data=test_system, aes(x=System, y=n)) +
+  geom_col(colour="black", width=0.8, aes(fill=n)) +
   theme_classic() +
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45,
                                    hjust = 1,
                                    vjust = 1)) +
   ggtitle('Epitope Tissue-Expression (System Level)') + ylab('Epitope Count') +
-  scale_fill_gradient(high = "firebrick", low = "#ffce00", name = "# of Epitopes")
+  scale_fill_gradient(high = "firebrick", low = "dodgerblue3", name = "# of Epitopes") +
+  scale_y_continuous(expand = c(0, 0))
   #scale_fill_gradientn(colours = mycol)
 
 #Organ
-ggplot(data=test_organ, aes(x=Organ, y=n)) +
-  geom_col(colour="black",aes(fill=n)) +
+p<-ggplot(data=test_organ, aes(x=Organ, y=n)) +
+  geom_col(colour="black", width=0.8, aes(fill=n)) +
   theme_classic() +
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45,
                                    hjust = 1,
                                    vjust = 1)) +
   ggtitle('Epitope Tissue-Expression (Organ Level)') + ylab('Epitope Count') +
-  scale_fill_gradient(high = "firebrick", low = "#ffce00", name = "# of Epitopes")
+  scale_fill_gradient(high = "firebrick", low = "dodgerblue3", name = "# of Epitopes") +
+  scale_y_continuous(expand = c(0, 0))
   #scale_fill_gradientn(colours = mycol)
+
+
+
+
+save_plot(p, "delete2")
+
+
