@@ -6,6 +6,11 @@ MAIN_DIR=${SCRIPTS}/..
 DATA=${SCRIPTS}/../data
 RESULTS=${SCRIPTS}/../results
 
+#Remove unmatched_epitopes.txt if it already exists
+if [ -f "${RESULTS}/unmatched_epitopes.txt" ]; then
+    rm ${RESULTS}/unmatched_epitopes.txt
+fi
+
 #Changes permissions so list of epitopes can be accessed
 chmod 775 $1
 
