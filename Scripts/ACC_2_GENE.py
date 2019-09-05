@@ -10,9 +10,15 @@ for each entry in the dataframe.
 
 ###IMPORT AND CLEAN-UP UNIPROT ACESSION ID'S FOR QUERY
 import pandas as pd
+import sys
+import os
+
+#Import pipeline directory path and set working directoy
+run_path=str(sys.argv[1])
+os.chdir(run_path)
 
 #Reads in dataframe with Epitope and ACC ID
-df = pd.read_csv(r'uniprot_ACC.tsv', header=None, delimiter="\t")
+df = pd.read_csv(r'results/uniprot_ACC.tsv', header=None, delimiter="\t")
 
 #Appends column names to dataframe
 df.columns=['Epitope', 'ACC']
@@ -66,4 +72,4 @@ output=pd.merge(df, df1, how='inner', on='ACC')
 #output=output.drop_duplicates()
 
 #Writes output to csv file
-output.to_csv(r'acc_gene.csv', sep=',', encoding='utf-8', index=False, header=True)
+output.to_csv(r'results/acc_gene.csv', sep=',', encoding='utf-8', index=False, header=True)

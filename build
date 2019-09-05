@@ -5,9 +5,6 @@
 
 INSTALL_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
-mkdir ${INSTALL_PATH}/data
-mkdir ${INSTALL_PATH}/results
-
 echo 'Downloading/Installing Swissprot Database'
 wget 'ftp://ftp.ncbi.nih.gov/blast/db/FASTA/swissprot.gz'
 mv swissprot.gz ${INSTALL_PATH}/data/
@@ -22,5 +19,11 @@ echo 'Downloading Normal-Tissue Data from Human Protein Atlas'
 wget 'https://www.proteinatlas.org/download/normal_tissue.tsv.zip'
 mv normal_tissue.tsv.zip ${INSTALL_PATH}/data/
 unzip ${INSTALL_PATH}/data/normal_tissue.tsv.zip -d ${INSTALL_PATH}/data
+
+echo '------'
+
+#The following commands require latest version of R
+echo 'Downloading and Installing Required R Packages/Libraries'
+Rscript ${INSTALL_PATH}/scripts/RLib_Install.R
 
 echo 'FINISHED!!!'

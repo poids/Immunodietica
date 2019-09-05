@@ -11,9 +11,15 @@ for each entry in the dataframe.
 ###IMPORT AND CLEAN-UP UNIPROT PROTEIN NAMES FOR QUERY
 import pandas as pd
 import urllib.request, json
+import sys
+import os
+
+#Import pipeline directory path and set working directoy
+run_path=str(sys.argv[1])
+os.chdir(run_path)
 
 #Reads in dataframe with Epitope and UniProt Protein Name
-df = pd.read_csv(r'uniprot_names.tsv', header=None, delimiter="\t")
+df = pd.read_csv(r'results/uniprot_names.tsv', header=None, delimiter="\t")
 
 #Appends column names to dataframe
 df.columns=['Epitope', 'UniProt_Name']
@@ -86,4 +92,4 @@ output=pd.merge(df, sub_df, how='inner', on='UniProt_Name')
 #output=output.drop_duplicates()
 
 #Writes output to csv file
-output.to_csv(r'protname_gene.csv', sep=',', encoding='utf-8', index=False, header=True)
+output.to_csv(r'results/protname_gene.csv', sep=',', encoding='utf-8', index=False, header=True)

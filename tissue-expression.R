@@ -44,7 +44,7 @@ save_plot=function(p, plot_type){
   p_width=p_width/ppi
   
   #Saves plot
-  ggsave(paste0(plot_type, ".png"), plot = p, path = NULL,
+  ggsave(paste0(plot_type, ".png"), plot = p, path = './results/',
          scale = 1, width = p_width, height = p_height, units = "in",
          dpi = "retina", limitsize = TRUE)
 }
@@ -59,11 +59,11 @@ tis_expr=tis_expr[!(tis_expr$Organ=='Pituitary' | tis_expr$Organ=='Eye' | tis_ex
 
 #Import dataframe contianing results of epitope-uniprot query
 uniprot=read.csv('Data/protname_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
-
-#PIG_TEST
-#colnames(uniprot)<-c('Epitope', 'ACC', 'Gene_Symbol')
-
 uniprot$Gene_Symbol<-toupper(uniprot$Gene_Symbol)#Make all proteins uppercase
+
+  # uniprot=read.csv('Data/acc_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
+  # uniprot$Gene_Symbol<-toupper(uniprot$Gene)#Make all proteins uppercase
+
 
 #Options to filter based on Organism and AutoImmune disease
 # disease_epitopes <- read.csv("~/Bioinformatics/Immunodietica/Data/disease_epitopes.csv", sep="")
@@ -96,9 +96,20 @@ colnames(prot_freq) = c('Gene.name', 'Freq') #Format column names so it can be m
 
 
 ###TESTING
+epitope.disease <- read.csv("~/Bioinformatics/Immunodietica/Data/epitope-disease.csv", stringsAsFactors=FALSE)
+colnames(epitope.disease)<-c("Epitope_ID", "Epitope", "Disease")
 
-
-
+#Creates dataframe containing tissue-specificity and metadata for the epitope subset used in the uniprot query
+test<-tis_expr %>%
+  filter(Gene.name %in% genes) %>% #SHould this be other way around??
+  filter(Level!='Not detected') %>%
+  filter(Reliability!='Uncertain') %>%
+  select(-Tissue, -Cell.type) %>%
+  merge(uniprot, ., by.x='Gene_Symbol', by.y='Gene.name') %>%
+  merge(epitope.disease, ., by='Epitope') %>%
+  #write.csv(., "DELETE.csv", row.names = FALSE, quote = TRUE)
+  
+#write.csv(test, "../Immunodietica (Personal)/full_human_autoimmune_data.csv", row.names = FALSE, col.names = TRUE, quote = TRUE, sep = ",")
 
 #System
 test_system<-tis_expr %>%
