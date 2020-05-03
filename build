@@ -5,6 +5,12 @@
 
 INSTALL_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
+#Creates results directory if it doesn't already exist
+if [ ! -d "${INSTALL_PATH}/results" ]
+then
+	mkdir ${INSTALL_PATH}/results
+fi
+
 echo 'Downloading/Installing Swissprot Database'
 wget 'ftp://ftp.ncbi.nih.gov/blast/db/FASTA/swissprot.gz'
 mv swissprot.gz ${INSTALL_PATH}/data/

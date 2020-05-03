@@ -2,6 +2,8 @@
 library('dplyr')
 library('ggplot2')
 library('stringr')
+library('svglite')
+library('grDevices')
 
 #Set Working Directory
 setwd('~/Bioinformatics/Immunodietica/')
@@ -44,7 +46,7 @@ save_plot=function(p, plot_type){
   p_width=p_width/ppi
   
   #Saves plot
-  ggsave(paste0(plot_type, ".png"), plot = p, path = './results/',
+  ggsave(paste0(plot_type, ".svg"), plot = p, path = './Data/results',
          scale = 1, width = p_width, height = p_height, units = "in",
          dpi = "retina", limitsize = TRUE)
 }
@@ -56,7 +58,6 @@ tis_expr <- merge(tissue, system, by='Tissue') %>%
 #Remove entries for pituitary gland and eye (Not enough data form Human Protein Atlas to be accurate)
 tis_expr=tis_expr[!(tis_expr$Organ=='Pituitary' | tis_expr$Organ=='Eye' | tis_expr$Organ=='Foot' | tis_expr$Organ=='Thymus'),]
 
-
 #Import dataframe contianing results of epitope-uniprot query
 uniprot=read.csv('Data/protname_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
 uniprot$Gene_Symbol<-toupper(uniprot$Gene_Symbol)#Make all proteins uppercase
@@ -66,11 +67,25 @@ uniprot$Gene_Symbol<-toupper(uniprot$Gene_Symbol)#Make all proteins uppercase
 
 
 #Options to filter based on Organism and AutoImmune disease
-# disease_epitopes <- read.csv("~/Bioinformatics/Immunodietica/Data/disease_epitopes.csv", sep="")
-# uniprot=merge(uniprot, disease_epitopes, by.x = 'Epitope', by.y='description')
-# uniprot=uniprot[,1:4]
-# colnames(uniprot)=c('Epitope','UniProt_Name', 'Gene_Symbol', 'Disease')
-# uniprot=filter(uniprot, Disease=='ulcerative colitis,')
+uniprot=read.csv('Data/2019_Paper_Data/protname_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
+uniprot$Gene_Symbol<-toupper(uniprot$Gene_Symbol)#Make all proteins uppercase
+
+disease_epitopes <- read.csv("~/Bioinformatics/Immunodietica/Data/2019_Paper_Data/epitope-disease.csv", stringsAsFactors=FALSE)
+disease_epitopes <- disease_epitopes[c('description', 'disease')] #remove epitopeID
+# colnames(disease_epitopes)<-c("Epitope_ID", "Epitope", "Disease")
+
+#Disease to filter by:
+# disease='Behcet syndrome'
+# disease='insulin-dependent diabetes mellitus' #pancreas highest??
+disease='systemic lupus erythematosus' #everywhere?
+# disease='rheumatoid arthritis'
+# disease='multiple sclerosis' #brain highest?
+# disease="ulcerative colitis"
+
+uniprot=merge(uniprot, disease_epitopes, by.x = 'Epitope', by.y='description')
+uniprot=uniprot[,1:4]
+colnames(uniprot)=c('Epitope','UniProt_Name', 'Gene_Symbol', 'Disease')
+uniprot=filter(uniprot, Disease==disease)
 
 #Iterates through entries that have multiple protein aliases and replaces it with the one usesd by Human Protein Atlas
 protein_aliases<-uniprot %>% filter(str_detect(Gene_Symbol, "//")) #Finds all rows wher e
@@ -100,13 +115,13 @@ epitope.disease <- read.csv("~/Bioinformatics/Immunodietica/Data/epitope-disease
 colnames(epitope.disease)<-c("Epitope_ID", "Epitope", "Disease")
 
 #Creates dataframe containing tissue-specificity and metadata for the epitope subset used in the uniprot query
-test<-tis_expr %>%
-  filter(Gene.name %in% genes) %>% #SHould this be other way around??
-  filter(Level!='Not detected') %>%
-  filter(Reliability!='Uncertain') %>%
-  select(-Tissue, -Cell.type) %>%
-  merge(uniprot, ., by.x='Gene_Symbol', by.y='Gene.name') %>%
-  merge(epitope.disease, ., by='Epitope') %>%
+# test<-tis_expr %>%
+#   filter(Gene.name %in% genes) %>% #SHould this be other way around??
+#   filter(Level!='Not detected') %>%
+#   filter(Reliability!='Uncertain') %>%
+#   select(-Tissue, -Cell.type) %>%
+#   merge(uniprot, ., by.x='Gene_Symbol', by.y='Gene.name') %>%
+#   merge(epitope.disease, ., by='Epitope') %>%
   #write.csv(., "DELETE.csv", row.names = FALSE, quote = TRUE)
   
 #write.csv(test, "../Immunodietica (Personal)/full_human_autoimmune_data.csv", row.names = FALSE, col.names = TRUE, quote = TRUE, sep = ",")
@@ -120,6 +135,7 @@ test_system<-tis_expr %>%
   distinct() %>%
   merge(., prot_freq, by='Gene.name') %>%
   count(System, wt=Freq)
+
 
 #Organ
 test_organ<-tis_expr %>%
@@ -141,7 +157,8 @@ test_organ<-tis_expr %>%
   #distinct()%>%
 #  count(Organ)
 
-
+#Capitalize letters in disease
+disease<-gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2", disease, perl=TRUE)
 
 mycol <- c("navy", "blue", "cyan", "lightcyan", "yellow", "red", "red4")
 
@@ -166,14 +183,12 @@ p<-ggplot(data=test_organ, aes(x=Organ, y=n)) +
         axis.text.x = element_text(angle = 45,
                                    hjust = 1,
                                    vjust = 1)) +
-  ggtitle('Epitope Tissue-Expression (Organ Level)') + ylab('Epitope Count') +
+  ggtitle(paste(disease, '-', 'Epitope Tissue-Expression (Organ Level)')) + ylab('Epitope Count') +
+  # ggtitle(paste('All Autoimmune Diseases - Epitope Tissue-Expression (Organ Level)')) + ylab('Epitope Count') +
   scale_fill_gradient(high = "firebrick", low = "dodgerblue3", name = "# of Epitopes") +
   scale_y_continuous(expand = c(0, 0))
   #scale_fill_gradientn(colours = mycol)
 
+p
 
-
-
-save_plot(p, "delete2")
-
-
+save_plot(p, 'lupus_organ-expression')
