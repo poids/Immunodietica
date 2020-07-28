@@ -62,10 +62,6 @@ tis_expr=tis_expr[!(tis_expr$Organ=='Pituitary' | tis_expr$Organ=='Eye' | tis_ex
 uniprot=read.csv('Data/protname_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
 uniprot$Gene_Symbol<-toupper(uniprot$Gene_Symbol)#Make all proteins uppercase
 
-# uniprot=read.csv('Data/acc_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
-# uniprot$Gene_Symbol<-toupper(uniprot$Gene)#Make all proteins uppercase
-
-
 #Options to filter based on Organism
 uniprot=read.csv('Data/2019_Paper_Data/protname_gene.csv', header = TRUE, sep = ",", stringsAsFactors = F)
 uniprot$Gene_Symbol<-toupper(uniprot$Gene_Symbol)#Make all proteins uppercase
@@ -101,17 +97,18 @@ genes=array(uniprot$Gene) #Make list of proteins
 prot_freq=as.data.frame(table(genes)) #Count frequency of each protein in list
 colnames(prot_freq) = c('Gene.name', 'Freq') #Format column names so it can be merged with tissue_expression data
 
+#Snapshot of select genes used for testing
 #genes=c('Aqp4', 'FTL',	'HBB2',	'KCNJ10', 'MAG',	'MBP',	'MOG', 'Mag',	'Mog',	'PLP1',	'RTN4R',	'TALDO1',	'TKT',	'TUBB1',	'Taldo1',	'Tubb1',	'gpmA1',	'gpmA2')
 #genes=sample(unique(tis_sys$Gene.name), 70)
 
 
-###TESTING
-epitope.animal <- filtered_organism[c('epitope_id','description','organism')] #remove epitopeID
-colnames(epitope.animal)<-c("Epitope_ID", "Epitope", "Organism")
+###Build out master dataframe of all data
+# epitope.animal <- filtered_organism[c('epitope_id','description','organism')] #remove epitopeID
+# colnames(epitope.animal)<-c("Epitope_ID", "Epitope", "Organism")
 
 # Creates dataframe containing tissue-specificity and metadata for the epitope subset used in the uniprot query
 # animal_expression<-tis_expr %>%
-#   filter(Gene.name %in% genes) %>% #SHould this be other way around??
+#   filter(Gene.name %in% genes) %>%
 #   filter(Level!='Not detected') %>%
 #   filter(Reliability!='Uncertain') %>%
 #   select(-Tissue, -Cell.type) %>%
@@ -123,7 +120,7 @@ colnames(epitope.animal)<-c("Epitope_ID", "Epitope", "Organism")
 
 #System
 system<-tis_expr %>%
-  filter(Gene.name %in% genes) %>% #SHould this be other way around??
+  filter(Gene.name %in% genes) %>%
   filter(Level!='Not detected') %>%
   filter(Reliability!='Uncertain') %>%
   select(Gene.name, System) %>%
@@ -142,15 +139,6 @@ organ<-tis_expr %>%
   ubiquitous(., length(unique(tis_expr$Organ))) %>% #Ubiquitous function
   merge(., prot_freq, by='Gene.name') %>%
   count(Organ, wt=Freq)
-
-# test_organ<-data.frame(lapply(test_organ, rep, test_organ$Freq)) %>%
-#   select(Gene.name, Organ) %>%
-#   count(Organ)
-
-
-#%>%
-#distinct()%>%
-#  count(Organ)
 
 #Capitalize letters in disease
 animal<-gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2", animal, perl=TRUE)
